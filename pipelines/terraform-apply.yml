@@ -7,7 +7,7 @@ pipelines:
     display_order: -1
     materials:
       ansible:
-        git: https://github.com/raghudevopsb77/expense-terraform
+        git: https://github.com/SuprabathKristam/expense-terraform.git
         shallow_clone: false
         auto_update: true
         branch: main
