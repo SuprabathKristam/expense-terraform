@@ -2,31 +2,30 @@ format_version: 10
 pipelines:
   TerraformApply:
     group: defaultGroup
-    label_template: ${COUNT}
+    label_template: "${COUNT}"
     lock_behavior: none
     display_order: -1
     materials:
       ansible:
-        git: https://github.com/SuprabathKristam/expense-ansible.git
+        git: https://github.com/raghudevopsb77/expense-terraform
         shallow_clone: false
         auto_update: true
         branch: main
     stages:
       - DEV:
           fetch_materials: true
-          approval:
-            type: manual
           jobs:
             deployment:
               timeout: 0
               tasks:
                 - exec:
                     command: terraform
-                    arguments: ["init","-backend-config=env-dev/state.tfvars"]
+                    arguments: ["init", "-backend-config=env-dev/state.tfvars"]
 
                 - exec:
                     command: terraform
-                    arguments: [ "apply","-var-file=env-dev/main.tfvars", "-auto-approve" ]
+                    arguments: ["apply", "-var-file=env-dev/main.tfvars", "-auto-approve"]
+
       - QA:
           fetch_materials: true
           approval:
@@ -41,6 +40,8 @@ pipelines:
                     arguments:
                       - -l
                       - -A
+
+
       - UAT:
           fetch_materials: true
           approval:
@@ -55,6 +56,7 @@ pipelines:
                     arguments:
                       - -l
                       - -A
+
       - PROD:
           fetch_materials: true
           approval:
