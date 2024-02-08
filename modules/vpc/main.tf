@@ -15,3 +15,13 @@ resource "aws_subnet" "main" {
     Name = "subnet-${count.index}"
   }
 }
+
+resource "aws_vpc_peering_connection" "main" {
+  vpc_id      = aws_vpc.main.id         #in the first line we gave name as main for this VPC
+  peer_vpc_id = data.aws_vpc.default.id # we are calling from data.tf
+  auto_accept = true    # we are accepting the connection
+
+  tags = {
+    Name      = "${var.env}-vpv-with-default-vpc"
+  }
+}
