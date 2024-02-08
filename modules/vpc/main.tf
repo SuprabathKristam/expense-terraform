@@ -25,3 +25,15 @@ resource "aws_vpc_peering_connection" "main" {
     Name      = "${var.env}-vpv-with-default-vpc"
   }
 }
+
+resource "aws_route" "main" {     #main means the new vpc
+  route_table_id            = aws_vpc.main.main_route_table_id
+  destination_cidr_block    = data.aws_vpc.default.cidr_block  # this is default vpc cidr block which is destination and getting from data.tf
+  vpc_peering_connection_id = aws_vpc_peering_connection.main.id #From above created peering connection
+}
+
+resource "aws_route" "default_vpc" {
+  route_table_id            = data.aws_vpc.default.main_route_table_id #This is default vpc table id
+  destination_cidr_block    = aws_vpc.main.cidr_block # This is the new vpc cidr block which is a destination in this case
+  vpc_peering_connection_id = aws_vpc_peering_connection.main.id #From above created peering connection
+}
