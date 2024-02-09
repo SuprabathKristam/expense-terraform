@@ -27,7 +27,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   count = length(var.public_subnets_cidr)
   route {
-    cidr_block = "0.0.0.0"
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
   }
   tags = {
@@ -49,7 +49,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
   count = length(var.private_subnets_cidr)
   route {
-    cidr_block = "0.0.0.0"
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
   }
   tags = {
