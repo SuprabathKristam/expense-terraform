@@ -51,7 +51,7 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table_association" "public" {  #Used for mapping of newly created route tables
   count          = length(var.public_subnets_cidr)
-  route_table_id = lookup(element(aws_route_table.public.id, count.index),"id", null) #aws_route_table.public[count.index].id
+  route_table_id = lookup(element(aws_route_table.public, count.index), "id", null) #aws_route_table.public[count.index].id
   subnet_id      = lookup(element(aws_subnet.public, count.index),"id", null )
 }
 
