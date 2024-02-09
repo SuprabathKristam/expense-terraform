@@ -80,27 +80,7 @@ resource "aws_subnet" "private" {
 }
 
 
-resource "aws_route_table" "private" {
-  count = length(var.private_subnets_cidr)
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = lookup(element(aws_nat_gateway.main, count.index), "id", null)  # Here we are attaching to NAT Gateway
-  }
-  route {
-    cidr_block                = data.aws_vpc.default.cidr_block   # creating  a peering connection
-    vpc_peering_connection_id = aws_vpc_peering_connection.main.id
-  }
-  tags = {
-    Name = "private-rt-${count.index+1}"
-  }
-}
 
-resource "aws_route_table_association" "private" {  #Used for mapping of newly created route tables
-  count          = length(var.private_subnets_cidr)
-  route_table_id = lookup(element(aws_route_table.private, count.index),"id", null) #aws_route_table.private[count.index].id
-  subnet_id      = lookup(element(aws_subnet.private, count.index),"id", null )
-}
 
 resource "aws_route" "main" {     #main means the new vpc
   route_table_id            = aws_vpc.main.main_route_table_id
