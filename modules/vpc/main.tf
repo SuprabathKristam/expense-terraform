@@ -38,22 +38,11 @@ resource "aws_route_table" "public" {
 resource "aws_subnet" "private" {
   count             = length(var.private_subnets_cidr)
   vpc_id            = aws_vpc.main.id
-  cidr_block        = element(var.private_subnets_cidr,count.index)
+  cidr_block        = element(var.private_subnets_cidr, count.index)
   availability_zone = element(var.az, count.index)
 
   tags = {
     Name = "private-subnet-${count.index+1}"
-  }
-}
-resource "aws_route_table" "private" {
-  count = length(var.private_subnets_cidr)
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
-  }
-  tags = {
-    Name = "private-rt-${count.index+1}"
   }
 }
 
