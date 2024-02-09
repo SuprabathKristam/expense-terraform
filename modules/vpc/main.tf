@@ -4,6 +4,13 @@ resource "aws_vpc" "main" {
     Name = "${var.env}-${var.project_name}-vpc"
   }
 }
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.env}-${var.project_name}-igw"  #igw stands for internet gateway
+  }
+}
 
 resource "aws_subnet" "public" {
   count             = length(var.public_subnets_cidr)
@@ -16,6 +23,18 @@ resource "aws_subnet" "public" {
   }
 }
 
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+  count = length(var.public_subnets_cidr)
+  route {
+    cidr_block = "0.0.0.0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+  tags = {
+    Name = "public-rt-${count.index+1}"
+  }
+}
+
 resource "aws_subnet" "private" {
   count             = length(var.private_subnets_cidr)
   vpc_id            = aws_vpc.main.id
@@ -24,6 +43,17 @@ resource "aws_subnet" "private" {
 
   tags = {
     Name = "private-subnet-${count.index+1}"
+  }
+}
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+  count = length(var.private_subnets_cidr)
+  route {
+    cidr_block = "0.0.0.0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+  tags = {
+    Name = "private-rt-${count.index+1}"
   }
 }
 
