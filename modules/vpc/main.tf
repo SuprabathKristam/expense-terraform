@@ -4,6 +4,16 @@ resource "aws_vpc" "main" {
     Name = "${var.env}-${var.project_name}-vpc"
   }
 }
+resource "aws_vpc_peering_connection" "main" {
+  vpc_id      = aws_vpc.main.id         #in the first line we gave name as main for this VPC
+  peer_vpc_id = data.aws_vpc.default.id # we are calling from data.tf
+  auto_accept = true    # we are accepting the connection
+
+  tags = {
+    Name      = "${var.env}-vpv-with-default-vpc"
+  }
+}
+
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id    # Attaching the new VPC we created
 
@@ -30,9 +40,19 @@ resource "aws_route_table" "public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
   }
+  route {
+    cidr_block                = data.aws_vpc.default.cidr_block   # creating  a peering connection
+    vpc_peering_connection_id = aws_vpc_peering_connection.main.id
+  }
   tags = {
     Name = "public-rt-${count.index+1}"
   }
+}
+
+resource "aws_route_table_association" "public" {  #Used for mapping of newly created route tables
+  count = length(var.public_subnets_cidr)
+  route_table_id = lookup(element(aws_route_table.public.id, count.index),"id", null) #aws_route_table.public[count.index].id
+  subnet_id = lookup(element(aws_subnet.public.id, count.index),"id", null )
 }
 
 resource "aws_subnet" "private" {
@@ -43,16 +63,6 @@ resource "aws_subnet" "private" {
 
   tags = {
     Name = "private-subnet-${count.index+1}"
-  }
-}
-
-resource "aws_vpc_peering_connection" "main" {
-  vpc_id      = aws_vpc.main.id         #in the first line we gave name as main for this VPC
-  peer_vpc_id = data.aws_vpc.default.id # we are calling from data.tf
-  auto_accept = true    # we are accepting the connection
-
-  tags = {
-    Name      = "${var.env}-vpv-with-default-vpc"
   }
 }
 
