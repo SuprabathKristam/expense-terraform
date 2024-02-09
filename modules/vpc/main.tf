@@ -5,7 +5,7 @@ resource "aws_vpc" "main" {
   }
 }
 resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id    # Attaching the new VPC we created
 
   tags = {
     Name = "${var.env}-${var.project_name}-igw"  #igw stands for internet gateway
@@ -28,7 +28,7 @@ resource "aws_route_table" "public" {
   count = length(var.public_subnets_cidr)
   route {
     cidr_block = "0.0.0.0"
-    gateway_id = aws_internet_gateway.main.id
+    gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
   }
   tags = {
     Name = "public-rt-${count.index+1}"
@@ -50,7 +50,7 @@ resource "aws_route_table" "private" {
   count = length(var.private_subnets_cidr)
   route {
     cidr_block = "0.0.0.0"
-    gateway_id = aws_internet_gateway.main.id
+    gateway_id = aws_internet_gateway.main.id  # Here we are attaching internet Gateway
   }
   tags = {
     Name = "private-rt-${count.index+1}"
