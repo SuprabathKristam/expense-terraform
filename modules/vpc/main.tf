@@ -55,6 +55,19 @@ resource "aws_route_table_association" "public" {  #Used for mapping of newly cr
   subnet_id      = lookup(element(aws_subnet.public, count.index),"id", null )
 }
 
+resource "aws_eip" "main" {  # Getting an elastic(public ip from amazon to connect to NAT gateway)
+  domain = "vpc"
+}
+resource "aws_nat_gateway" "main" {
+  count          = length(var.public_subnets_cidr)
+  allocation_id  = lookup(element(aws_eip.main, count.index),"id", null)
+  subnet_id      = lookup(element(aws_subnet.public, count.index),"id", null )
+
+  tags = {
+    Name = "ngw-${count.index+1}"
+  }
+}
+
 resource "aws_subnet" "private" {
   count             = length(var.private_subnets_cidr)
   vpc_id            = aws_vpc.main.id
@@ -64,6 +77,29 @@ resource "aws_subnet" "private" {
   tags = {
     Name = "private-subnet-${count.index+1}"
   }
+}
+
+
+resource "aws_route_table" "private" {
+  count = length(var.private_subnets_cidr)
+  vpc_id = aws_vpc.main.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = lookup(element(aws_nat_gateway.main, count.index), "id", null)  # Here we are attaching to NAT Gateway
+  }
+  route {
+    cidr_block                = data.aws_vpc.default.cidr_block   # creating  a peering connection
+    vpc_peering_connection_id = aws_vpc_peering_connection.main.id
+  }
+  tags = {
+    Name = "private-rt-${count.index+1}"
+  }
+}
+
+resource "aws_route_table_association" "private" {  #Used for mapping of newly created route tables
+  count          = length(var.private_subnets_cidr)
+  route_table_id = lookup(element(aws_route_table.private, count.index),"id", null) #aws_route_table.private[count.index].id
+  subnet_id      = lookup(element(aws_subnet.private, count.index),"id", null )
 }
 
 resource "aws_route" "main" {     #main means the new vpc
