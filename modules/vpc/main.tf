@@ -141,7 +141,7 @@ resource "aws_subnet" "db" {
   availability_zone = element(var.az, count.index)
 
   tags = {
-    Name = "web-subnet-${count.index+1}"
+    Name = "db-subnet-${count.index+1}"
   }
 }
 resource "aws_route_table" "db" {
