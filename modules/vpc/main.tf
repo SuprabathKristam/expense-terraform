@@ -55,7 +55,7 @@ resource "aws_route_table_association" "public" {  #Used for mapping of newly cr
   subnet_id      = lookup(element(aws_subnet.public, count.index),"id", null )
 }
 
-resource "aws_eip" "main" {
+resource "aws_eip" "main" {  # Creating 2 elastic ip's
   count  = length(var.public_subnets_cidr)
   domain = "vpc"
 }
