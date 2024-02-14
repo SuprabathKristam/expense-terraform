@@ -62,15 +62,16 @@ module "rds" {
 }
 
 module "backend" {
-  source             = "./modules.app"
-  app_port           = var.backed_app_port
-  bastion_cidrs      = var.bastion_cidrs
-  components         = backend
-  env                = var.env
-  instance_capacity  = var.backend_instance_capacity
-  instance_type      = var.backend_instance_type
-  project_name       = var.project_name
-  sg_cidr_blocks     = module.vpc.web_subnet_ids # as the apps should be accessible to web subnets
-  vpc_id             = module.vpc.vpc_id
+  source                      = "./modules.app"
+  app_port                    = var.backed_app_port
+  bastion_cidrs               = var.bastion_cidrs
+  components                  = backend
+  env                         = var.env
+  instance_capacity           = var.backend_instance_capacity
+  instance_type               = var.backend_instance_type
+  project_name                = var.project_name
+  sg_cidr_blocks              = var.web_subnets_cidr # as the apps should be accessible to web subnets
+  vpc_id                      = module.vpc.vpc_id
+  vpc_zone_identifier         = module.vpc.app_subnet_ids
 }
 
