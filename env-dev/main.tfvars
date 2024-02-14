@@ -2,6 +2,7 @@ env = "dev"
 project_name = "expense"
 kms_key_id   = "arn:aws:kms:us-east-1:872150321686:key/989e4ac3-688b-456b-ac1f-a5d42e0ae5d4"
 #
+bastion_cidrs = ["172.31.37.233/32"]  # we are considering the bastion node as our workstation node so we are take private ip of work station and /32 represents single id
 #vpc = {
 #  main = {
 #    vpc_cidr             = "10.10.0.0/21"
@@ -38,3 +39,9 @@ rds_engine               = "mysql"
 rds_engine_version       = "5.7"  # our version we are using
 rds_instance_class       = "db.t3.micro"
 rds_family               = "mysql5.7"
+
+backed_app_port          = 80
+backend_instance_capacity = 1
+backend_instance_type     = "t3.small"
+
+#Bastion cidr os placed at the top as it is common
