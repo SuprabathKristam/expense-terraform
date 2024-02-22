@@ -90,3 +90,30 @@ module "frontend" {
   vpc_zone_identifier         = module.vpc.web_subnet_ids
 }
 
+module "public_alb" {
+  source = "./modules/alb"
+
+  alb_name       = "public"
+  internal       = false
+  sg_cidr_blocks = ["0.0.0.0/0"] #Exposing to outside world
+
+  project_name   = var.project_name
+  env            = var.env
+
+  subnets        = module.vpc.public_subnet_ids
+  vpc_id         = module.vpc
+}
+
+module "public_alb" {
+  source = "./modules/alb"
+
+  alb_name       = "private"
+  internal       = true
+  sg_cidr_blocks = var.web_subnets_cidr #should be exposed only to web subnets check diagram and this will be used by security groups also
+
+  project_name   = var.project_name
+  env            = var.env
+
+  subnets        = module.vpc.app_subnet_ids #load balancer to be created in app subnets
+  vpc_id         = module.vpc
+}
