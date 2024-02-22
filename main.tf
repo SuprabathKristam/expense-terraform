@@ -101,10 +101,10 @@ module "public_alb" {
   env            = var.env
 
   subnets        = module.vpc.public_subnet_ids
-  vpc_id         = module.vpc
+  vpc_id         = module.vpc.vpc_id
 }
 
-module "public_alb" {
+module "private_alb" {
   source = "./modules/alb"
 
   alb_name       = "private"
@@ -115,5 +115,5 @@ module "public_alb" {
   env            = var.env
 
   subnets        = module.vpc.app_subnet_ids #load balancer to be created in app subnets
-  vpc_id         = module.vpc
+  vpc_id         = module.vpc.vpc_id
 }
