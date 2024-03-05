@@ -3,6 +3,9 @@ project_name = "expense"
 kms_key_id   = "arn:aws:kms:us-east-1:872150321686:key/989e4ac3-688b-456b-ac1f-a5d42e0ae5d4"
 #
 bastion_cidrs = ["172.31.37.233/32"]  # we are considering the bastion node as our workstation node so we are take private ip of work station and /32 represents single id
+acm_arn      = "arn:aws:acm:us-east-1:872150321686:certificate/231cca25-8706-425e-9ab7-8dddf468d868"
+
+
 #vpc = {
 #  main = {
 #    vpc_cidr             = "10.10.0.0/21"
