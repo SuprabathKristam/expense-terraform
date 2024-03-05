@@ -101,6 +101,7 @@ module "public_alb" {
 
   subnets = module.vpc.public_subnet_ids
   vpc_id  = module.vpc.vpc_id
+  target_group_arn = module.frontend.target_group_arn
 }
 
 module "private_alb" {
@@ -116,4 +117,5 @@ module "private_alb" {
 
   subnets        = module.vpc.app_subnet_ids #load balancer to be created in app subnets
   vpc_id         = module.vpc.vpc_id
+  target_group_arn = module.backend.target_group_arn
 }
