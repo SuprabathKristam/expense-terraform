@@ -95,13 +95,15 @@ module "public_alb" {
   alb_name       = "public"
   internal       = false
   sg_cidr_blocks = ["0.0.0.0/0"] #Exposing to outside world
+  dns_name       = frontend
   project_name = var.project_name
   env          = var.env
   acm_arn      = var.acm_arn
-
-  subnets = module.vpc.public_subnet_ids
-  vpc_id  = module.vpc.vpc_id
+  zone_id        = var.zone_id
+  subnets        = module.vpc.public_subnet_ids
+  vpc_id         = module.vpc.vpc_id
   target_group_arn = module.frontend.target_group_arn
+
 }
 
 module "private_alb" {
@@ -110,10 +112,11 @@ module "private_alb" {
   alb_name       = "private"
   internal       = true
   sg_cidr_blocks = var.web_subnets_cidr #should be exposed only to web subnets check diagram and this will be used by security groups also
-
+  dns_name       = backend
   project_name   = var.project_name
   env            = var.env
   acm_arn        = var.acm_arn
+  zone_id        = var.zone_id
 
   subnets        = module.vpc.app_subnet_ids #load balancer to be created in app subnets
   vpc_id         = module.vpc.vpc_id

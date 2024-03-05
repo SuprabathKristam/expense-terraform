@@ -71,3 +71,11 @@ resource "aws_lb_listener" "http" {
     }
   }
 }
+
+resource "aws_route53_record" "main" {
+  zone_id = var.zone_id
+  name    = "${var.dns_name}-${var.env}"
+  type    = "CNAME"  #As we are giving name to name
+  ttl     = 300
+  records = [aws_lb.main.dns_name]
+}
