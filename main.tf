@@ -95,7 +95,7 @@ module "public_alb" {
   alb_name       = "public"
   internal       = false
   sg_cidr_blocks = ["0.0.0.0/0"] #Exposing to outside world
-  dns_name       = frontend
+  dns_name       = "frontend"
   project_name = var.project_name
   env          = var.env
   acm_arn      = var.acm_arn
@@ -112,7 +112,7 @@ module "private_alb" {
   alb_name       = "private"
   internal       = true
   sg_cidr_blocks = var.web_subnets_cidr #should be exposed only to web subnets check diagram and this will be used by security groups also
-  dns_name       = backend
+  dns_name       = "backend"
   project_name   = var.project_name
   env            = var.env
   acm_arn        = var.acm_arn
