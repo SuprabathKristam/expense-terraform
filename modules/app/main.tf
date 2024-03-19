@@ -70,3 +70,47 @@ resource "aws_lb_target_group" "main" {
     timeout = 2 #timeout to do health check
   }
 }
+
+resource "aws_iam_role" "main" {
+  name               = "${local.name}-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+  inline_policy {
+    name = "parameter-store"
+
+    policy = jsonencode({     # we have taken code from manually created Test poly from console
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "GetParameters", # we gave this in generic way
+          "Effect": "Allow",
+          "Action": [
+            "ssm:GetParameterHistory",
+            "ssm:GetParametersByPath",
+            "ssm:GetParameters",
+            "ssm:GetParameter"
+          ],
+          "Resource": "arn:aws:ssm:us-east-1:872150321686:parameter/${var.env}.${var.project_name}.${var.component}.*"
+        },
+        {
+          "Sid": "DescribeAllParameters", #we have this in generic way
+          "Effect": "Allow",
+          "Action": "ssm:DescribeParameters",
+          "Resource": "*"
+        }
+      ]
+    })
+  }
+}
