@@ -105,12 +105,14 @@ resource "aws_iam_role" "main" {
           "Sid": "GetParameters", # we gave this in generic way
           "Effect": "Allow",
           "Action": [
+            "kms:Decrypt",
             "ssm:GetParameterHistory",
             "ssm:GetParametersByPath",
             "ssm:GetParameters",
             "ssm:GetParameter"
           ],
           "Resource":concat([
+            "arn:aws:kms:us-east-1:872150321686:key/bf82e161-d623-42fb-a7e9-ed7ec50b3bd8",
             "arn:aws:ssm:us-east-1:872150321686:parameter/${var.env}.${var.project_name}.${var.component}.*"
           ],var.parameters)
         },
