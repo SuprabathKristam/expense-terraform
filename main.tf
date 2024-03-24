@@ -73,6 +73,7 @@ module "backend" {
   sg_cidr_blocks              = var.app_subnets_cidr
   vpc_id                      = module.vpc.vpc_id
   vpc_zone_identifier         = module.vpc.app_subnet_ids
+  parameters                  = ["arn:aws:ssm:us-east-1:872150321686:parameter/${var.env}.${var.project_name}.rds.*"]
 }
 
 module "frontend" {
@@ -88,6 +89,7 @@ module "frontend" {
   sg_cidr_blocks              = var.public_subnets_cidr # this needs to be checked
   vpc_id                      = module.vpc.vpc_id
   vpc_zone_identifier         = module.vpc.web_subnet_ids
+  parameters                  = []
 }
 module "public_alb" {
   source = "./modules/alb"
