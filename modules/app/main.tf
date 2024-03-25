@@ -31,11 +31,11 @@ resource "aws_security_group" "main" {
 }
 
 resource "aws_launch_template" "main" {
-  name_prefix   = "${local.name}-launch-template"
-  image_id      = data.aws_ami.centos-8.image_id
-  instance_type = var.instance_type
+  name_prefix            = "${local.name}-launch-template"
+  image_id               = data.aws_ami.centos-8.image_id
+  instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.main.id]
-  user_data = base64encode(templatefile("${path.module}/userdata.sh", {
+  user_data              = base64encode(templatefile("${path.module}/userdata.sh", {
     service_name = var.component
     env          = var.env
   }))
@@ -43,8 +43,18 @@ resource "aws_launch_template" "main" {
   iam_instance_profile {
     name = aws_iam_role.main.name
   }
-}
 
+  block_device_mappings {
+    device_name = "/dev/sda1"
+
+    ebs {
+      volume_size           = 10
+      encrypted             = true
+      kms_key_id            = var.kms
+      delete_on_termination = true
+    }
+  }
+}
 resource "aws_autoscaling_group" "main" {
   name               = "${local.name}-autoscaling-group"
   desired_capacity   = var.instance_capacity # number of instances needed

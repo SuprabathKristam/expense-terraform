@@ -62,6 +62,7 @@ module "rds" {
 }
 
 module "backend" {
+  depends_on = [module.rds]   #Here we are saying untill rds is completed don't go to backend
   source                      = "./modules/app"
   app_port                    = var.backend_app_port
   bastion_cidrs               = var.bastion_cidrs
@@ -74,6 +75,7 @@ module "backend" {
   vpc_id                      = module.vpc.vpc_id
   vpc_zone_identifier         = module.vpc.app_subnet_ids
   parameters                  = ["arn:aws:ssm:us-east-1:872150321686:parameter/${var.env}.${var.project_name}.rds.*"]
+  kms                         = var.kms_key_id
 }
 
 module "frontend" {
@@ -90,6 +92,7 @@ module "frontend" {
   vpc_id                      = module.vpc.vpc_id
   vpc_zone_identifier         = module.vpc.web_subnet_ids
   parameters                  = []
+  kms                         = var.kms_key_id
 }
 module "public_alb" {
   source = "./modules/alb"
